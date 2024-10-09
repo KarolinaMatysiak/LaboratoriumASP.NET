@@ -12,11 +12,7 @@ public class HomeController : Controller
     {
         _logger = logger;
     }
-    /*ZADANIE 1
-     Utworz metode Calcultor oraz widok w nim wyswietl tylko napis Kalkulator
-     Dodaj link w nawigacji aplikacji do metody Calculator
-     Wykonaj commit i wyslij do repozyterium przez push
-     */
+ 
     public IActionResult Index()
     {
         return View();
@@ -25,31 +21,44 @@ public class HomeController : Controller
     {
         return View();
     }
-    public IActionResult Calculator()
+    public IActionResult Calculator(Operator? op, double? x, double? y)
     {
         //https//localhost:7226/Home/Calculator?op=add&x=4&y=1,5
         //var op= Request.Query["op"];
         //var x= double.Parse(Request.Query["x"]);
         //var y = double.Parse(Request.Query["y"]);
-        //var result = 0.0d;
-        //switch (op)
+        if (x is null || y is null)
         {
-            case "add":
+            ViewBag.ErrorMessage = "Niepoprawny format";
+            return View("CalculaterError");
+        }
+
+        if (op is null)
+        {
+           
+            ViewBag.ErrorMessage = "Nieznany operator";
+            return View("CalculaterError");
+        }
+        double? result = 0.0;
+        switch (op)
+        {
+            case Operator.Add:
                 result = x + y;
                 ViewBag.Operator = "+";
                 break;
-            case "sub":
+            case Operator.Sub:
                 result = x - y;
                 ViewBag.Operator = "-";
                 break;
-                case "mul":
+                case Operator.Mul:
                 result = x * y;
                 ViewBag.Operator = "*";
                 break;
-                case "div":
+                case Operator.Div:
                 result = x / y;
                 ViewBag.Operator = ":";
                 break;
+              
         }
 
         ViewBag.Result = result;
@@ -68,3 +77,19 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
+
+public enum Operator
+{
+    Add,Sub,Mul,Div
+}
+
+/*ZADANIE 1
+  Utworz metode Calcultor oraz widok w nim wyswietl tylko napis Kalkulator
+  Dodaj link w nawigacji aplikacji do metody Calculator
+  Wykonaj commit i wyslij do repozyterium przez push
+  */
+    
+/*ZADANIE 2
+ Napisz metode Age, ktora przyjmuje parametr z data urodzenia i wywietla wiek
+ w latach miesiacach i dniach
+ */

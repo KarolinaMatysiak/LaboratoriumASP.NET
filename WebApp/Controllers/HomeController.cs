@@ -27,6 +27,8 @@ public class HomeController : Controller
         //var op= Request.Query["op"];
         //var x= double.Parse(Request.Query["x"]);
         //var y = double.Parse(Request.Query["y"]);
+        
+        
         if (x is null || y is null)
         {
             ViewBag.ErrorMessage = "Niepoprawny format";

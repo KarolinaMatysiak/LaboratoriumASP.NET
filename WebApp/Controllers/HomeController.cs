@@ -28,9 +28,11 @@ public class HomeController : Controller
         return View();
     }
     
-    public IActionResult Calculator(Operator op)
+    public IActionResult Calculator(double a, Operator op, double b)
     {
         ViewBag.Op = op;
+        ViewBag.a = a;
+        ViewBag.b = b;
         return View();
     }
 

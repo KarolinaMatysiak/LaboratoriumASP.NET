@@ -17,4 +17,9 @@
       <Folder Include="Areas\CalculatorController\Views\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Kalkulator\Form.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Calculator\Form.cshtml" />
+    </ItemGroup>
+
 </Project>

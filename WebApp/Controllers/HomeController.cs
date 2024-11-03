@@ -30,6 +30,8 @@ public class HomeController : Controller
     
     public IActionResult Calculator()
     {
+        string op = Request.Query["op"];
+        ViewBag.Op = op;
         return View();
     }
 

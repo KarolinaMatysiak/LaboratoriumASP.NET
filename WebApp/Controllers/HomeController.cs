@@ -28,9 +28,8 @@ public class HomeController : Controller
         return View();
     }
     
-    public IActionResult Calculator()
+    public IActionResult Calculator(Operator op)
     {
-        string op = Request.Query["op"];
         ViewBag.Op = op;
         return View();
     }

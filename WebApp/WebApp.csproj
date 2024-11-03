@@ -15,6 +15,7 @@
       <Folder Include="Areas\CalculatorController\Data\" />
       <Folder Include="Areas\CalculatorController\Models\" />
       <Folder Include="Areas\CalculatorController\Views\" />
+      <Folder Include="Views\Komputer\" />
     </ItemGroup>
 
     <ItemGroup>

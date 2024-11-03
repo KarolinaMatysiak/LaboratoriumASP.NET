@@ -28,11 +28,48 @@ public class HomeController : Controller
         return View();
     }
     
-    public IActionResult Calculator(double a, Operator op, double b)
+    public IActionResult Calculator(double? a, Operator? op, double? b)
     {
+        
         ViewBag.Op = op;
         ViewBag.a = a;
         ViewBag.b = b;
+        
+        double result = 0;
+        if (a is not null & b is not null)
+        {
+            switch (op)
+            {
+                case Operator.Unknown:
+                    return View("Error");
+
+                case Operator.Add:
+                    result = (double)(a + b);
+                    ViewBag.Op = "+";
+                    break;
+                case Operator.Mul:
+                    result = (double)(a * b);
+                    ViewBag.Op = "*";
+                    break;
+                case Operator.Sub:
+                    result = (double)(a - b);
+                    ViewBag.Op = "-";
+                    break;
+                case Operator.Div:
+                    result = (double)(a / b);
+                    ViewBag.Op = ":";
+                    break;
+                default:
+                    return View("Error");
+            }
+        }
+        else
+        {
+            return View("Error");
+        }
+
+        ViewBag.result = result;
+        
         return View();
     }
 

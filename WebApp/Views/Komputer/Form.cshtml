@@ -1,0 +1,56 @@
+@model Komputer
+@{
+    ViewData["Title"] = "Komputer";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Komputer</title>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col-6">
+            <h2>Stwórz komputer</h2>
+            <form action="Create" method="POST">
+                <div class="mb-3">
+                    <label class="form-label" for="nazwa">Nazwa komputera</label>
+                        <span asp-validation-for="Nazwa" class="text-danger"></span>
+                    <input class="form-control" type="text" name="nazwa" step="0.00001" id="1"/>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="procesor">Procesor</label>
+                    <span asp-validation-for="Procesor" class="text-danger"></span>
+                    <input class="form-control" type="text" name="procesor" step="0.00001" id="2"/>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="pamiec">Pamięć</label>
+                    <span asp-validation-for="Pamiec" class="text-danger"></span>
+                    <input class="form-control" type="number" name="pamiec" step="0.00001" id="3"/>
+                </div>
+                <div class="mb-3">
+                    <div class="mb-3">
+                        <label class="form-label" for="kartaGraficzna">Karta Graficzna</label>
+                        <span asp-validation-for="KartaGraficzna" class="text-danger"></span>
+                        <input class="form-control" type="text" name="kartaGraficzna" step="0.00001" id="4"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="producent">Producent</label>
+                        <span asp-validation-for="Producent" class="text-danger"></span>
+                        <input class="form-control" type="text" name="producent" step="0.00001" id="5"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="dataProdukcji">Data Produkcji</label>
+                        <span asp-validation-for="DataProdukcji" class="text-danger"></span>
+                        <input class="form-control" type="date" name="dataProdukcji" step="0.00001" id="6"/>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Stwórz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -5,31 +5,32 @@ namespace WebApp.Models;
 
 public class Komputer
 {
-    [MinLength(length:5, ErrorMessage ="Nazwa musi mieć co najmniej 5 znaków")]
     [Required(ErrorMessage ="Proszę podać nazwe komputera")]
-    public string nazwa { get; set; }
-    
     [MinLength(length:5, ErrorMessage ="Nazwa musi mieć co najmniej 5 znaków")]
+    public  string? Nazwa { get; set; }
+    
     [Required(ErrorMessage ="Proszę podać model procesora")]
-    public string procesor { get; set; }
+    [MinLength(length:5, ErrorMessage ="Nazwa musi mieć co najmniej 5 znaków")]
+    public  string? Procesor { get; set; }
     
-    [Range(1, 512, ErrorMessage = "Wielkość musi być w zakresie 1-512 GB")]
     [Required(ErrorMessage ="Proszę podać wielkość pamięci")]
-    public int pamiec { get; set; }
+    [Range(1, 512, ErrorMessage = "Wielkość musi być w zakresie 1-512 GB")]
+    public int? Pamiec { get; set; }
     
-    [MinLength(length:5, ErrorMessage ="Nazwa musi mieć co najmniej 5 znaków")]
     [Required(ErrorMessage ="Proszę podać model karty graficznej")]
-    public string kartaGraficzna { get; set; }
-    
     [MinLength(length:5, ErrorMessage ="Nazwa musi mieć co najmniej 5 znaków")]
-    [Required(ErrorMessage ="Proszę podać nazwe producenta")]
-    public string producent { get; set; }
+    public string? KartaGraficzna { get; set; }
     
-    [DataType(DataType.Date,ErrorMessage = "Prosze podac date produkcji w odpowiednim formacie")]
+    [Required(ErrorMessage ="Proszę podać nazwe producenta")]
+    [MinLength(length:5, ErrorMessage ="Nazwa musi mieć co najmniej 5 znaków")]
+    public string? Producent { get; set; }
+    
     [Required(ErrorMessage ="Proszę podać date produkcji")]
-    public string dataProdukcji { get; set; }
+    [DataType(DataType.Date,ErrorMessage = "Prosze podac date produkcji w odpowiednim formacie")]
+    [ValidationOfDate(ErrorMessage = "Data produkcji musi być mniejsza lub równa dzisiejszej dacie.")]
+    public DateTime? DataProdukcji { get; set; }
     
     [HiddenInput]
-    public int Id { get; set; }
+    public  int Id { get; set; }
     
 }

@@ -1,0 +1,62 @@
+@model Dictionary<int, Komputer>
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+   
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: white;
+    }
+</style>
+
+<h2>Lista komputerów</h2>
+
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+    <tr>
+        <th style="padding: 10px; background-color: pink;">ID</th>
+        <th style="padding: 10px; background-color: pink;">Nazwa</th>
+        <th style="padding: 10px; background-color: pink;">Procesor</th>
+        <th style="padding: 10px; background-color: pink;">Pamięć</th>
+        <th style="padding: 10px; background-color: pink;">Data Produkcji</th>
+        <th style="padding: 10px; background-color: pink;"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var komputer in @Model)
+    {
+    <tr>
+        <td style="padding: 10px;">@komputer.Value.Id</td>
+        
+        <td style="padding: 10px;">@komputer.Value.Nazwa</td>
+        <td style="padding: 10px;">@komputer.Value.Procesor</td>
+        <td style="padding: 10px;">@komputer.Value.Pamiec</td>
+        <td style="padding: 10px;">@komputer.Value.DataProdukcji?.ToShortDateString()</td>
+        <td>
+            <a class="btn btn-primary"
+               asp-action="Edit"
+               asp-controller="Komputer"
+               asp-route-id=@komputer.Value.Id>Edytuj</a>
+            <a class="btn btn-primary"
+               asp-action="Details"
+               asp-controller="Komputer"
+               asp-route-id=@komputer.Value.Id>Szczegóły</a>
+            <a class="btn btn-primary"
+               asp-action="Delete"
+               asp-controller="Komputer"
+               asp-route-id=@komputer.Value.Id>Usuń</a>
+        </td>
+    </tr>
+    }
+    </tbody>
+</table>

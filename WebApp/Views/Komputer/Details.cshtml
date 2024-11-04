@@ -1,0 +1,30 @@
+@model Komputer
+
+@{
+    ViewBag.Title = "Szczegóły";
+    Layout = "_Layout";
+}
+
+<h3>Nazwa </h3>
+<p>@Model.Nazwa</p>
+
+<h4>Procesor</h4>
+<p>@Model.Procesor</p>
+
+<h4>Pamięć</h4>
+<p>@Model.Pamiec</p>
+
+<h4>Data produkcji</h4>
+<p>@Model.DataProdukcji</p>
+
+<h4>Producent </h4>
+<p>@Model.Producent</p>
+
+<h4>Id</h4>
+<p>@Model.Id</p>
+
+
+
+<div class="mt-3">
+    <a class="btn btn-primary" asp-action="Index">Powrót do listy</a>
+</div>

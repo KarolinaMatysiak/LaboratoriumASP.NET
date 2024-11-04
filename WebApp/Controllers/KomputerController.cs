@@ -11,13 +11,53 @@ namespace WebApp.Controllers
         // GET: FormController
         public ActionResult Index()
         {
-            return View(_computers);
+            return View("Index", _computers);
         }
         
         public ActionResult Form()
         {
             return View();
         }
+        
+        [HttpGet("{id:int}")]
+        public IActionResult Edit(int id)
+        {
+    
+            if (_computers.Keys.Contains(id))
+            {
+                return View("EditForm", _computers[id]);
+            }
+            else
+            {
+                return NotFound();
+            };
+        }
+
+        [HttpPost]
+        public IActionResult Save(Komputer komputer)
+        {
+            if (ModelState.IsValid)
+            {
+                _computers[komputer.Id] = komputer;
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View("EditForm", komputer); 
+            }
+        }
+        public IActionResult Delete(int id)
+        {
+            _computers.Remove(id);
+            return View("Index", _computers);
+        }
+        
+        
+        public IActionResult Details(int id)
+        {
+            return View(_computers[id]);
+        }
+        
 
         [HttpGet]
         public IActionResult Create()

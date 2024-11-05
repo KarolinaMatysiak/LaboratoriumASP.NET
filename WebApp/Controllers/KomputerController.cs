@@ -4,14 +4,21 @@ using WebApp.Models;
 namespace WebApp.Controllers
 {
     public class KomputerController : Controller
+    
     {
-        static private Dictionary<int, Komputer> _computers = new Dictionary<int, Komputer>();
+        
+        private readonly IKomputerService _komputerService;
+        public KomputerController(IKomputerService komputerService)
+        {
+            _komputerService = komputerService;
+        }
+        
 
 
         // GET: FormController
         public ActionResult Index()
         {
-            return View(_computers.Values.ToList());
+            return View(_komputerService.FindAll());
         }
         
         public ActionResult Form()
@@ -22,13 +29,15 @@ namespace WebApp.Controllers
         [HttpGet("{id:int}")]
         public IActionResult Edit(int id)
         {
-    
-            if (_computers.Keys.Contains(id))
+
+            var komputer = _komputerService.FindById(id);
+            if (komputer is not null)
             {
-                return View("EditForm", _computers[id]);
+                return View("EditForm", komputer);
             }
             else
             {
+                Console.WriteLine("NIE ZNALEZIONO TAKIEGO ID");
                 return NotFound();
             };
         }
@@ -38,7 +47,7 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _computers[komputer.Id] = komputer;
+                _komputerService.Update(komputer);
                 return RedirectToAction("Index");
             }
             else
@@ -48,14 +57,14 @@ namespace WebApp.Controllers
         }
         public IActionResult Delete(int id)
         {
-            _computers.Remove(id);
-            return View("Index", _computers.Values.ToList());
+           _komputerService.Delete(id);
+            return View("Index", _komputerService.FindAll());
         }
         
         
         public IActionResult Details(int id)
         {
-            return View(_computers[id]);
+            return View(_komputerService.FindById(id));
         }
         
 
@@ -70,15 +79,12 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id = _computers.Keys.Count != 0 ? _computers.Keys.Max() : 0;
-                komputer.Id = id + 1;
-                _computers.Add(komputer.Id, komputer);
-
+                _komputerService.Add(komputer);
                 return RedirectToAction("Index");
             }
             else
             {
-                return View("Form", komputer); 
+                return View(komputer); 
             }
             
             

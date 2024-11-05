@@ -1,3 +1,5 @@
+using WebApp.Models;
+
 namespace WebApp;
 
 public class Program
@@ -8,6 +10,7 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
+        builder.Services.AddSingleton<IKomputerService, MemoryKomputerService>();
 
         var app = builder.Build();
 

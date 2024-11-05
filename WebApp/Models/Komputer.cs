@@ -5,6 +5,9 @@ namespace WebApp.Models;
 
 public class Komputer
 {
+    [Required(ErrorMessage ="Proszę uzupełnić pole")]
+    public Category Category { get; set; }
+    
     [Required(ErrorMessage ="Proszę podać nazwe komputera")]
     [MinLength(length:5, ErrorMessage ="Nazwa musi mieć co najmniej 5 znaków")]
     public  string? Nazwa { get; set; }

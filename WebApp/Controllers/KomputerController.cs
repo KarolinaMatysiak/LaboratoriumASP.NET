@@ -11,7 +11,7 @@ namespace WebApp.Controllers
         // GET: FormController
         public ActionResult Index()
         {
-            return View("Index", _computers);
+            return View(_computers.Values.ToList());
         }
         
         public ActionResult Form()
@@ -49,7 +49,7 @@ namespace WebApp.Controllers
         public IActionResult Delete(int id)
         {
             _computers.Remove(id);
-            return View("Index", _computers);
+            return View("Index", _computers.Values.ToList());
         }
         
         

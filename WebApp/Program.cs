@@ -11,6 +11,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddSingleton<IKomputerService, MemoryKomputerService>();
+        builder.Services.AddSingleton<IDateTimeProvider, CurrentDateTimeProvider>();
 
         var app = builder.Build();
 

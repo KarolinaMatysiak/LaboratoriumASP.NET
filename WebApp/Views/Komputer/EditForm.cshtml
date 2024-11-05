@@ -13,9 +13,17 @@
 <div class="container">
     <div class="row justify-content-md-center">
         <div class="col-6">
-            <h2>Stwórz komputer</h2>
+            <h2>Edytuj komputer</h2>
             <form action="Komputer/Save" method="POST">
                 <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="Created" value="@Model.Created" />
+                <div>
+                    <label asp-for="Category"></label>
+                    <div>
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+                    <select class="form-control" asp-for="Category" asp-items="@Html.GetEnumSelectList<Category>()"></select>
+                </div>
                 <div class="mb-3">
                     <label class="form-label" for="nazwa">Nazwa komputera</label>
                     <span asp-validation-for="Nazwa" class="text-danger"></span>

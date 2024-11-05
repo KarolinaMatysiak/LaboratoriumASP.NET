@@ -43,4 +43,7 @@ public class Komputer
     [HiddenInput]
     public  int Id { get; set; }
     
+    [HiddenInput]
+    public DateTime Created { get; set; } 
+    
 }

@@ -6,7 +6,8 @@ namespace WebApp.Controllers
     public class KomputerController : Controller
     
     {
-        
+             
+
         private readonly IKomputerService _komputerService;
         public KomputerController(IKomputerService komputerService)
         {

@@ -2,11 +2,19 @@ namespace WebApp.Models;
 
 public class MemoryKomputerService : IKomputerService
 {
+    private readonly IDateTimeProvider _timeProvider;
+
+    public MemoryKomputerService(IDateTimeProvider timeProvider)
+    {
+        _timeProvider = timeProvider;
+    }
+    
     private Dictionary<int, Komputer> _items = new Dictionary<int, Komputer>();
     public int Add(Komputer item)
     {
         int id = _items.Keys.Count != 0 ? _items.Keys.Max() : 0;
         item.Id = id + 1;
+        item.Created = _timeProvider.Now();
         _items.Add(item.Id, item);
         return item.Id;
     }

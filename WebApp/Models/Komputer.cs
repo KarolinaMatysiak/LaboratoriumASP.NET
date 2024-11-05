@@ -41,9 +41,11 @@ public class Komputer
     public DateTime? DataProdukcji { get; set; }
     
     [HiddenInput]
+    [Display(Name = "ID")]
     public  int Id { get; set; }
     
     [HiddenInput]
+    [Display(Name = "Data utworzenia")]
     public DateTime Created { get; set; } 
     
 }

@@ -4,8 +4,11 @@ using WebApp.Models;
 namespace WebApp.Controllers
 {
     public class KomputerController : Controller
-    
+
     {
+   
+
+     //   public Komputer AppDbContext;
              
 
         private readonly IKomputerService _komputerService;
@@ -88,7 +91,7 @@ namespace WebApp.Controllers
                 return View(komputer); 
             }
             
-            
+            //Microsoft.EntityFrameworkCore.Design i Sqlite i po prostu core
         }
     
 

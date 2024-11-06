@@ -1,4 +1,6 @@
+using Microsoft.DotNet.Scaffolding.Shared;
 using WebApp.Models;
+//using WebApp.Models.Services;
 
 namespace WebApp;
 
@@ -10,7 +12,10 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
-        builder.Services.AddSingleton<IKomputerService, MemoryKomputerService>();
+        builder.Services.AddDbContext<AppDbContex>();        
+        
+        builder.Services.AddTransient<IKomputerService, EFKomputerService>();
+            
         builder.Services.AddSingleton<IDateTimeProvider, CurrentDateTimeProvider>();
 
         var app = builder.Build();

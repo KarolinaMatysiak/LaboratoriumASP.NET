@@ -1,7 +1,10 @@
+
 namespace WebApp.Models;
 
 public interface IKomputerService
 {
+    
+    
     int Add(Komputer book);
     void Delete(int id);
     void Update(Komputer book);

@@ -7,6 +7,7 @@ public class AppDbContex : DbContext
     //klasa 
 
     public DbSet<KomputerEntity> Komputery { get; set; }
+    public DbSet<OrganizationEntity> Organizations { get; set; }
     
 
     private string DbPath { get; set; }
@@ -29,7 +30,45 @@ public class AppDbContex : DbContext
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+                          {
+                              modelBuilder.Entity<OrganizationEntity>()
+                                  .ToTable("organizations")
+                                  .HasData(
+                                      new OrganizationEntity()
+                                      {
+                                          Id = 101,
+                                          NIP = "234567",
+                                          Name = "Firma",
+                                          REGON = "756383292932",
+                                      },
+                                      
+                              new OrganizationEntity()
+                                  {
+                                      Id = 102,
+                                      NIP = "234547",
+                                      Name = "WSEI",
+                                      REGON = "756333296932",
+                                  }
+                                  );
+                              
+                              modelBuilder.Entity<OrganizationEntity>()
+                                  .OwnsOne(o => o.Address) 
+            .HasData(
+            new {OrganizationEntityId =101, Street = "sw. Filipa 17", City = "Krakow"},
+        new {OrganizationEntityId =102, Street = "Dworcowa 22", City = "Wroclaw"}
+            );
+
+
+
+        modelBuilder.Entity<KomputerEntity>()
+            .Property(c => c.OrganizationId)
+            .HasDefaultValue(101);
+
+        modelBuilder.Entity<KomputerEntity>()
+            .HasOne(e => e.Organization)
+            .WithMany(o => o.Komputery)
+            .HasForeignKey(e => e.OrganizationId);
+        
         modelBuilder.Entity<KomputerEntity>().HasData(
 
             new KomputerEntity()
@@ -43,7 +82,8 @@ public class AppDbContex : DbContext
                 Nazwa = "Gaming Machine Pro",
                 KartaGraficzna = "NVIDIA",
                 DataProdukcji = new DateTime(year: 2000, month: 10, day: 4),
-                Created = DateTime.Now
+                Created = DateTime.Now,
+                OrganizationId = 101,
 
 
 
@@ -60,7 +100,8 @@ public class AppDbContex : DbContext
                 Nazwa = "Quiet-book",
                 KartaGraficzna = "NVIDIA",
                 DataProdukcji = new DateTime(year: 1997, month: 12, day: 22),
-                Created = DateTime.Now
+                Created = DateTime.Now,
+                OrganizationId = 101,
 
 
             });

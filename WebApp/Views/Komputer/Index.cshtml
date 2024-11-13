@@ -32,6 +32,7 @@
         <th style="padding: 10px; background-color: pink;"> @Html.DisplayNameFor(model => model[0].Created)</th>
         <th style="padding: 10px; background-color: pink;"> @Html.DisplayNameFor(model => model[0].Nazwa)</th>
         <th style="padding: 10px; background-color: pink;"> @Html.DisplayNameFor(model => model[0].Procesor)</th>
+        <th style="padding: 10px; background-color: pink;"> @Html.DisplayNameFor(model => model[0].Organization)</th>
         <th style="padding: 10px; background-color: pink;"> @Html.DisplayNameFor(model => model[0].Pamiec)</th>
         <th style="padding: 10px; background-color: pink;"> @Html.DisplayNameFor(model => model[0].DataProdukcji)</th>
         <th style="padding: 10px; background-color: pink;"> @Html.DisplayNameFor(model => model[0].Category)</th>
@@ -47,6 +48,7 @@
         
             <td style="padding: 10px;">@komputer.Nazwa</td>
             <td style="padding: 10px;">@komputer.Procesor</td>
+            <td style="padding: 10px;">@komputer.Organization.Name</td>
             <td style="padding: 10px;">@komputer.Pamiec</td>
             <td style="padding: 10px;">@komputer.DataProdukcji?.ToShortDateString()</td>
             <td style="padding: 10px;">@komputer.Category.GetDisplayName()</td>
@@ -69,3 +71,5 @@
     </tbody>
 </table>
 }
+
+

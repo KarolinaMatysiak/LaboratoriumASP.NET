@@ -34,6 +34,11 @@ public class MemoryKomputerService : IKomputerService
         return _items[id];
     }
 
+    public List<OrganizationEntity> GetAllOrganizations()
+    {
+        throw new NotImplementedException();
+    }
+
     public void Update(Komputer item)
     {
         _items[item.Id] = item;

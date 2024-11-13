@@ -1,4 +1,6 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 
 namespace WebApp.Controllers
@@ -27,16 +29,31 @@ namespace WebApp.Controllers
         
         public ActionResult Form()
         {
-            return View();
+            var model = new Komputer();
+            model.Organizations = _komputerService.GetAllOrganizations()
+                .Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(), 
+                    Text = e.Name
+                })
+                .ToList();
+            return View(model);
         }
         
         [HttpGet("{id:int}")]
         public IActionResult Edit(int id)
         {
-
             var komputer = _komputerService.FindById(id);
             if (komputer is not null)
             {
+                komputer.Organizations = _komputerService.GetAllOrganizations()
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.Id.ToString(), 
+                        Text = e.Name
+                    })
+                    .ToList();
+                
                 return View("EditForm", komputer);
             }
             else
@@ -70,13 +87,6 @@ namespace WebApp.Controllers
         {
             return View(_komputerService.FindById(id));
         }
-        
-
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
 
         [HttpPost]
         public IActionResult Create(Komputer komputer)
@@ -93,8 +103,5 @@ namespace WebApp.Controllers
             
             //Microsoft.EntityFrameworkCore.Design i Sqlite i po prostu core
         }
-    
-
-
 }
 }

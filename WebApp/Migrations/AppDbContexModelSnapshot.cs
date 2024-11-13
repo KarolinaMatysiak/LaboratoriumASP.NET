@@ -40,6 +40,11 @@ namespace WebApp.Migrations
                     b.Property<string>("Nazwa")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("OrganizationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(101);
+
                     b.Property<int?>("Pamiec")
                         .HasColumnType("INTEGER");
 
@@ -51,6 +56,8 @@ namespace WebApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrganizationId");
+
                     b.ToTable("computers");
 
                     b.HasData(
@@ -58,10 +65,11 @@ namespace WebApp.Migrations
                         {
                             Id = 1,
                             Category = 4,
-                            Created = new DateTime(2024, 11, 6, 19, 38, 24, 309, DateTimeKind.Local).AddTicks(6078),
+                            Created = new DateTime(2024, 11, 13, 18, 53, 3, 281, DateTimeKind.Local).AddTicks(1384),
                             DataProdukcji = new DateTime(2000, 10, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             KartaGraficzna = "NVIDIA",
                             Nazwa = "Gaming Machine Pro",
+                            OrganizationId = 101,
                             Pamiec = 16,
                             Procesor = "Intel i5",
                             Producent = "Mateusz Matysiak"
@@ -70,14 +78,111 @@ namespace WebApp.Migrations
                         {
                             Id = 2,
                             Category = 1,
-                            Created = new DateTime(2024, 11, 6, 19, 38, 24, 309, DateTimeKind.Local).AddTicks(6136),
+                            Created = new DateTime(2024, 11, 13, 18, 53, 3, 281, DateTimeKind.Local).AddTicks(1439),
                             DataProdukcji = new DateTime(1997, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             KartaGraficzna = "NVIDIA",
                             Nazwa = "Quiet-book",
+                            OrganizationId = 101,
                             Pamiec = 16,
                             Procesor = "Intel i7",
                             Producent = "Karolina Bruzda"
                         });
+                });
+
+            modelBuilder.Entity("WebApp.Models.OrganizationEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("NIP")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("REGON")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("organizations", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 101,
+                            NIP = "234567",
+                            Name = "Firma",
+                            REGON = "756383292932"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            NIP = "234547",
+                            Name = "WSEI",
+                            REGON = "756333296932"
+                        });
+                });
+
+            modelBuilder.Entity("WebApp.Models.KomputerEntity", b =>
+                {
+                    b.HasOne("WebApp.Models.OrganizationEntity", "Organization")
+                        .WithMany("Komputery")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("WebApp.Models.OrganizationEntity", b =>
+                {
+                    b.OwnsOne("WebApp.Models.Address", "Address", b1 =>
+                        {
+                            b1.Property<int>("OrganizationEntityId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("OrganizationEntityId");
+
+                            b1.ToTable("organizations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrganizationEntityId");
+
+                            b1.HasData(
+                                new
+                                {
+                                    OrganizationEntityId = 101,
+                                    City = "Krakow",
+                                    Street = "sw. Filipa 17"
+                                },
+                                new
+                                {
+                                    OrganizationEntityId = 102,
+                                    City = "Wroclaw",
+                                    Street = "Dworcowa 22"
+                                });
+                        });
+
+                    b.Navigation("Address")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WebApp.Models.OrganizationEntity", b =>
+                {
+                    b.Navigation("Komputery");
                 });
 #pragma warning restore 612, 618
         }

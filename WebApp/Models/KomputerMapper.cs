@@ -13,7 +13,10 @@ public class KomputerMapper
             DataProdukcji = arg.DataProdukcji,
             KartaGraficzna = arg.KartaGraficzna,
             Category = arg.Category,
-            Pamiec = arg.Pamiec
+            Pamiec = arg.Pamiec,
+            Organization = arg.Organization,
+            OrganizationId = arg.OrganizationId,
+                
             //bez created
         };
         
@@ -30,7 +33,9 @@ public class KomputerMapper
             DataProdukcji = arg.DataProdukcji,
             KartaGraficzna = arg.KartaGraficzna,
             Category = arg.Category,
-            Pamiec = arg.Pamiec
+            Pamiec = arg.Pamiec,
+            Organization = arg.Organization,
+            OrganizationId = arg.OrganizationId,
             //bez created
         };
     }

@@ -10,4 +10,6 @@ public interface IKomputerService
     void Update(Komputer book);
     List<Komputer> FindAll();
     Komputer? FindById(int id);
+
+    List<OrganizationEntity> GetAllOrganizations();
 }

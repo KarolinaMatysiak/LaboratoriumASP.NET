@@ -55,6 +55,11 @@
                         <span asp-validation-for="DataProdukcji" class="text-danger"></span>
                         <input class="form-control" type="date" name="DataProdukcji" step="0.00001" id="6" value="@Model.DataProdukcji.Value.ToString("yyyy-MM-dd")" />
                     </div>
+                    <div class="mb-3">
+                        <label asp-for="OrganizationId"></label>
+                        <select class= "form-select" asp-for="OrganizationId" asp-items = "@Model.Organizations"></select>
+                        <span asp-validation-for="OrganizationId" class="text-danger"></span>
+                    </div>
                     <button class="btn btn-primary" type="submit">Zapisz</button>
                 </div>
             </form>

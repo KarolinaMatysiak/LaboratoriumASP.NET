@@ -1,5 +1,7 @@
 using Microsoft.DotNet.Scaffolding.Shared;
 using WebApp.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 //using WebApp.Models.Services;
 
 namespace WebApp;
@@ -12,9 +14,25 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
+        builder.Services.AddRazorPages();
         builder.Services.AddDbContext<AppDbContex>();        
+
+        builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = true;
+            options.Password.RequiredLength = 5;
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+
+        })
+            
+        .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<AppDbContex>();
         
         builder.Services.AddTransient<IKomputerService, EFKomputerService>();
+        builder.Services.AddMemoryCache();
+        builder.Services.AddSession();
             
         builder.Services.AddSingleton<IDateTimeProvider, CurrentDateTimeProvider>();
 
@@ -32,9 +50,12 @@ public class Program
         app.UseStaticFiles();
 
         app.UseRouting();
-
+        app.UseAuthentication();
         app.UseAuthorization();
+        app.UseSession();
 
+
+        app.MapRazorPages();
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");

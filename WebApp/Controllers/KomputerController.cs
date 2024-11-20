@@ -1,10 +1,13 @@
 using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
+    
+    [Authorize(Roles = "admin,user")]
     public class KomputerController : Controller
 
     {
@@ -22,6 +25,8 @@ namespace WebApp.Controllers
 
 
         // GET: FormController
+        
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View(_komputerService.FindAll());

@@ -2,6 +2,8 @@ using Microsoft.DotNet.Scaffolding.Shared;
 using WebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WebApp.Models.University;
+
 //using WebApp.Models.Services;
 
 namespace WebApp;
@@ -15,7 +17,11 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
-        builder.Services.AddDbContext<AppDbContex>();        
+        builder.Services.AddDbContext<AppDbContex>();
+        builder.Services.AddDbContext<UniversityDbContext>(op =>
+        {
+            op.UseSqlite((builder.Configuration["UniversityDatabse:ConnectionString"]));
+        });
 
         builder.Services.AddDefaultIdentity<IdentityUser>(options =>
         {

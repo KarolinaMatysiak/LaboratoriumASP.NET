@@ -19,29 +19,102 @@ namespace WebApp.Controllers
         }
 
         // GET: University
-        public async Task<IActionResult> Index()
+        //stronicowanie
+        public async Task<IActionResult> Index(int page = 1, int size = 20)
         {
-            var universityDbContext = _context.Universities.Include(u => u.Country);
-            return View(await universityDbContext.ToListAsync());
+            var data = await _context
+                .Universities
+                .Include(c => c.Country)
+                .OrderByDescending((m => m.Country))
+                .Skip(size * (page - 1))
+                .Take(size)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var rankingSystems = await _context
+                .RankingSystems
+                .ToListAsync();
+
+            var model = data.Select((universityEntity) => new UniversityIndex
+            {
+                UniversityId = universityEntity.Id,
+                UniversityName = universityEntity.UniversityName,
+                CountryName = universityEntity.Country?.CountryName,
+                RankingSystems = rankingSystems.Select((rankingSystem) => new UniversityIndexRankingSystem
+                    {
+                        RankingSystemId = rankingSystem.Id,
+                        RankingSystemName = rankingSystem.SystemName
+                    }
+                )
+            });
+            return View(model);
         }
 
         // GET: University/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? systemId, int? universityId)
         {
-            if (id == null)
+            if (systemId == null || universityId == null)
             {
                 return NotFound();
             }
 
+            var criteriaList = await _context.RankingCriteria
+                .Where(e => e.RankingSystemId == systemId)
+                .Select(e => new
+                {
+                    RankingCriteria = e,
+                    FilteredUniversityRankingYears = e.UniversityRankingYearEntity
+                        .Where(ury => ury.UniversityId == universityId)
+                        .ToList()
+                })
+                .ToListAsync();
+
             var university = await _context.Universities
                 .Include(u => u.Country)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == universityId);
             if (university == null)
             {
                 return NotFound();
             }
 
-            return View(university);
+            var oldestCriterion = await _context.UniversityRankingYears
+                .Where(x => x.UniversityId == universityId)
+                .Where(x => x.RankingCriteria.RankingSystemId == systemId)
+                .FirstOrDefaultAsync();
+            if (oldestCriterion == null)
+            {
+                return NotFound();
+            }
+            
+            var data = new Dictionary<string, Dictionary<int, int?>>();
+            foreach (var criterion in criteriaList)
+            {
+                data.Add(criterion.RankingCriteria.CriteriaName, new Dictionary<int, int?>());
+
+                foreach (var ranking in criterion.FilteredUniversityRankingYears)
+                {
+                    if (ranking.Year is not null && ranking.Score is not null)
+                    {
+                        data[criterion.RankingCriteria.CriteriaName].Add((int)ranking.Year, (int)ranking.Score);
+                    }
+                }
+            }
+
+
+            return View(new CriteriaModel
+            {
+                CriteriaUniversity = new CriteriaUniversityModel
+                {
+                    UniversityName = university.UniversityName,
+                    Country = university.Country.CountryName
+                },
+                CriteriaRecords = criteriaList.Select(element => new CriteriaRecord
+                {
+                    Name = element.RankingCriteria.CriteriaName,
+                    Data = data.GetValueOrDefault(element.RankingCriteria.CriteriaName, new Dictionary<int, int?>())
+                }),
+                StartYear = oldestCriterion.Year,
+            });
         }
 
         // GET: University/Create
@@ -56,16 +129,17 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CountryId,UniversityName")] University university)
+        public async Task<IActionResult> Create([Bind("Id,CountryId,UniversityName")] UniversityEntity universityEntity)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(university);
+                _context.Add(universityEntity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", university.CountryId);
-            return View(university);
+
+            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", universityEntity.CountryId);
+            return View(universityEntity);
         }
 
         // GET: University/Edit/5
@@ -81,6 +155,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
+
             ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", university.CountryId);
             return View(university);
         }
@@ -90,9 +165,10 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CountryId,UniversityName")] University university)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Id,CountryId,UniversityName")] UniversityEntity universityEntity)
         {
-            if (id != university.Id)
+            if (id != universityEntity.Id)
             {
                 return NotFound();
             }
@@ -101,12 +177,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(university);
+                    _context.Update(universityEntity);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UniversityExists(university.Id))
+                    if (!UniversityExists(universityEntity.Id))
                     {
                         return NotFound();
                     }
@@ -115,10 +191,12 @@ namespace WebApp.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", university.CountryId);
-            return View(university);
+
+            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", universityEntity.CountryId);
+            return View(universityEntity);
         }
 
         // GET: University/Delete/5

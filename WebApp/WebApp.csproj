@@ -28,8 +28,8 @@
       <Folder Include="Areas\CalculatorController\Data\" />
       <Folder Include="Areas\CalculatorController\Models\" />
       <Folder Include="Areas\CalculatorController\Views\" />
+      <Folder Include="Entities\" />
       <Folder Include="Migrations\" />
-      <Folder Include="Models\University\" />
     </ItemGroup>
 
     <ItemGroup>

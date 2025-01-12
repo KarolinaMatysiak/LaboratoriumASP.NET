@@ -1,4 +1,5 @@
-@model WebApp.Models.University.University
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model WebApp.Models.University.CriteriaModel
 
 @{
     ViewData["Title"] = "Details";
@@ -9,23 +10,61 @@
 
 <div>
     <h4>University</h4>
-    <hr />
+    <hr/>
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UniversityName)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CriteriaUniversity.UniversityName)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UniversityName)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CriteriaUniversity.UniversityName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Country)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CriteriaUniversity.Country)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Country.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CriteriaUniversity.Country)
         </dd>
     </dl>
 </div>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Criterion
+        </th>
+        @for (var i = 0; i < DateTime.Now.Year - Model.StartYear; i++)
+        {
+            <th>
+                @(Model.StartYear + i)
+            </th>
+        }
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (var item in Model.CriteriaRecords)
+    {
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            @for (int i = 0; i < DateTime.Now.Year - Model.StartYear; i++)
+            {
+            <td>
+                @{
+                    var score = item.Data.GetValueOrDefault((int)Model.StartYear + i, null);
+                    var scoreString = (score != null ? score.ToString() : "-")! ;
+                }
+                @scoreString
+            </td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    @* <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> | *@
     <a asp-action="Index">Back to List</a>
 </div>

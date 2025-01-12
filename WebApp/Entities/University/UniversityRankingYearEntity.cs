@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WebApp.Models.University;
 
-public partial class UniversityRankingYear
+public partial class UniversityRankingYearEntity
 {
     public int? UniversityId { get; set; }
 
@@ -13,7 +13,7 @@ public partial class UniversityRankingYear
 
     public int? Score { get; set; }
 
-    public virtual RankingCriterion? RankingCriteria { get; set; }
+    public virtual RankingCriterionEntity? RankingCriteria { get; set; }
 
-    public virtual University? University { get; set; }
+    public virtual UniversityEntity? University { get; set; }
 }

@@ -15,17 +15,17 @@ public partial class UniversityDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Country> Countries { get; set; }
+    public virtual DbSet<CountryEntity> Countries { get; set; }
 
-    public virtual DbSet<RankingCriterion> RankingCriteria { get; set; }
+    public virtual DbSet<RankingCriterionEntity> RankingCriteria { get; set; }
 
-    public virtual DbSet<RankingSystem> RankingSystems { get; set; }
+    public virtual DbSet<RankingSystemEntity> RankingSystems { get; set; }
 
-    public virtual DbSet<University> Universities { get; set; }
+    public virtual DbSet<UniversityEntity> Universities { get; set; }
 
-    public virtual DbSet<UniversityRankingYear> UniversityRankingYears { get; set; }
+    public virtual DbSet<UniversityRankingYearEntity> UniversityRankingYears { get; set; }
 
-    public virtual DbSet<UniversityYear> UniversityYears { get; set; }
+    public virtual DbSet<UniversityYearEntity> UniversityYears { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -33,7 +33,7 @@ public partial class UniversityDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Country>(entity =>
+        modelBuilder.Entity<CountryEntity>(entity =>
         {
             entity.ToTable("country");
 
@@ -45,7 +45,7 @@ public partial class UniversityDbContext : DbContext
                 .HasColumnName("country_name");
         });
 
-        modelBuilder.Entity<RankingCriterion>(entity =>
+        modelBuilder.Entity<RankingCriterionEntity>(entity =>
         {
             entity.ToTable("ranking_criteria");
 
@@ -62,7 +62,7 @@ public partial class UniversityDbContext : DbContext
             entity.HasOne(d => d.RankingSystem).WithMany(p => p.RankingCriteria).HasForeignKey(d => d.RankingSystemId);
         });
 
-        modelBuilder.Entity<RankingSystem>(entity =>
+        modelBuilder.Entity<RankingSystemEntity>(entity =>
         {
             entity.ToTable("ranking_system");
 
@@ -74,7 +74,7 @@ public partial class UniversityDbContext : DbContext
                 .HasColumnName("system_name");
         });
 
-        modelBuilder.Entity<University>(entity =>
+        modelBuilder.Entity<UniversityEntity>(entity =>
         {
             entity.ToTable("university");
 
@@ -91,11 +91,11 @@ public partial class UniversityDbContext : DbContext
             entity.HasOne(d => d.Country).WithMany(p => p.Universities).HasForeignKey(d => d.CountryId);
         });
 
-        modelBuilder.Entity<UniversityRankingYear>(entity =>
+        modelBuilder.Entity<UniversityRankingYearEntity>(entity =>
         {
             entity
-                .HasNoKey()
-                .ToTable("university_ranking_year");
+                .HasKey(e => new { e.RankingCriteriaId, e.UniversityId, e.Year });
+            entity.ToTable("university_ranking_year");
 
             entity.Property(e => e.RankingCriteriaId)
                 .HasDefaultValueSql("NULL")
@@ -110,12 +110,12 @@ public partial class UniversityDbContext : DbContext
                 .HasDefaultValueSql("NULL")
                 .HasColumnName("year");
 
-            entity.HasOne(d => d.RankingCriteria).WithMany().HasForeignKey(d => d.RankingCriteriaId);
+            entity.HasOne(d => d.RankingCriteria).WithMany(p => p.UniversityRankingYearEntity).HasForeignKey(d => d.RankingCriteriaId);
 
             entity.HasOne(d => d.University).WithMany().HasForeignKey(d => d.UniversityId);
         });
 
-        modelBuilder.Entity<UniversityYear>(entity =>
+        modelBuilder.Entity<UniversityYearEntity>(entity =>
         {
             entity
                 .HasNoKey()

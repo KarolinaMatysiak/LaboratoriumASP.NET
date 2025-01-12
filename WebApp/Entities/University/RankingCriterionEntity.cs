@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WebApp.Models.University;
 
-public partial class RankingCriterion
+public partial class RankingCriterionEntity
 {
     public int Id { get; set; }
 
@@ -11,5 +11,7 @@ public partial class RankingCriterion
 
     public string? CriteriaName { get; set; }
 
-    public virtual RankingSystem? RankingSystem { get; set; }
+    public virtual RankingSystemEntity? RankingSystem { get; set; }
+    
+    public virtual IEnumerable<UniversityRankingYearEntity>? UniversityRankingYearEntity { get; set; }
 }

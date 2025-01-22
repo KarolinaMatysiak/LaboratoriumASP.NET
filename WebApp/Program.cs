@@ -35,7 +35,8 @@ public class Program
             
         .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContex>();
-        
+
+        builder.Services.AddTransient<IUniversityService, UniversityService>();
         builder.Services.AddTransient<IKomputerService, EFKomputerService>();
         builder.Services.AddMemoryCache();
         builder.Services.AddSession();

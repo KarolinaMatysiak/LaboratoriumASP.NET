@@ -9,7 +9,6 @@
 <h1>Details</h1>
 
 <div>
-    <h4>University</h4>
     <hr/>
     <dl class="row">
         <dt class="col-sm-2">
@@ -25,46 +24,71 @@
             @Html.DisplayFor(model => model.CriteriaUniversity.Country)
         </dd>
     </dl>
+    <hr/>
 </div>
 
+<form method="GET" asp-action="Details">
+    <input type="hidden" name="universityId" value="@Model.CriteriaUniversity.UniversityId" />
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            Criterion
-        </th>
-        @for (var i = 0; i < DateTime.Now.Year - Model.StartYear; i++)
-        {
-            <th>
-                @(Model.StartYear + i)
-            </th>
-        }
-    </tr>
-    </thead>
-
-    <tbody>
-    @foreach (var item in Model.CriteriaRecords)
-    {
-        <tr>
-            <td>
-                @item.Name
-            </td>
-            @for (int i = 0; i < DateTime.Now.Year - Model.StartYear; i++)
+    <div>
+        @Html.DisplayNameFor(model => model.RankingSystems)
+        @Html.DropDownList(
+            "systemId",
+            new SelectList(Model.RankingSystems.Select(x => new SelectListItem
             {
-            <td>
-                @{
-                    var score = item.Data.GetValueOrDefault((int)Model.StartYear + i, null);
-                    var scoreString = (score != null ? score.ToString() : "-")! ;
-                }
-                @scoreString
-            </td>
+                Text = x.Name,
+                Value = x.Id.ToString()
+            }), "Value", "Text"),
+            "-",
+            new { onchange = "this.form.submit();" }
+        )
+        <hr/>
+    </div>
+
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                Criterion
+            </th>
+            @for (var i = 0; i < DateTime.Now.Year - Model.StartYear; i++)
+            {
+                <th>
+                    @(Model.StartYear + i)
+                </th>
             }
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+
+        <tbody>
+        @foreach (var item in Model.CriteriaRecords)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                @for (int i = 0; i < DateTime.Now.Year - Model.StartYear; i++)
+                {
+                    <td>
+                        @{
+                            var score = item.Data.GetValueOrDefault((int)Model.StartYear + i, null);
+                            var scoreString = (score != null ? score.ToString() : "-")!;
+                        }
+                        @scoreString
+                    </td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+</form>
+
 <div>
     @* <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> | *@
     <a asp-action="Index">Back to List</a>
 </div>
+
+<a asp-action="AddRanking" asp-route-universityId="@Model.CriteriaUniversity.UniversityId" class="btn btn-primary">
+    Add Ranking
+</a>

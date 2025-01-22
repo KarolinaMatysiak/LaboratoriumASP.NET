@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using WebApp.Models;
 using WebApp.Models.University;
 
 namespace WebApp.Controllers
@@ -12,10 +13,12 @@ namespace WebApp.Controllers
     public class UniversityController : Controller
     {
         private readonly UniversityDbContext _context;
+        private readonly IUniversityService _universityService;
 
-        public UniversityController(UniversityDbContext context)
+        public UniversityController(UniversityDbContext context, IUniversityService universityService)
         {
             _context = context;
+            _universityService = universityService;
         }
 
         // GET: University
@@ -31,89 +34,58 @@ namespace WebApp.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            var rankingSystems = await _context
-                .RankingSystems
-                .ToListAsync();
-
             var model = data.Select((universityEntity) => new UniversityIndex
             {
                 UniversityId = universityEntity.Id,
                 UniversityName = universityEntity.UniversityName,
                 CountryName = universityEntity.Country?.CountryName,
-                RankingSystems = rankingSystems.Select((rankingSystem) => new UniversityIndexRankingSystem
-                    {
-                        RankingSystemId = rankingSystem.Id,
-                        RankingSystemName = rankingSystem.SystemName
-                    }
-                )
             });
             return View(model);
         }
 
-        // GET: University/Details/5
-        public async Task<IActionResult> Details(int? systemId, int? universityId)
+        [HttpGet]
+        public async Task<IActionResult> Details(int? universityId, int? systemId)
         {
-            if (systemId == null || universityId == null)
+            if (universityId == null)
             {
                 return NotFound();
             }
 
-            var criteriaList = await _context.RankingCriteria
-                .Where(e => e.RankingSystemId == systemId)
-                .Select(e => new
-                {
-                    RankingCriteria = e,
-                    FilteredUniversityRankingYears = e.UniversityRankingYearEntity
-                        .Where(ury => ury.UniversityId == universityId)
-                        .ToList()
-                })
-                .ToListAsync();
+            var rankingSystems = await _universityService.GetRankingSystems();
 
-            var university = await _context.Universities
-                .Include(u => u.Country)
-                .FirstOrDefaultAsync(m => m.Id == universityId);
+            var university = await _universityService.GetUniversity((int)universityId);
             if (university == null)
             {
                 return NotFound();
             }
 
-            var oldestCriterion = await _context.UniversityRankingYears
-                .Where(x => x.UniversityId == universityId)
-                .Where(x => x.RankingCriteria.RankingSystemId == systemId)
-                .FirstOrDefaultAsync();
-            if (oldestCriterion == null)
-            {
-                return NotFound();
-            }
-            
-            var data = new Dictionary<string, Dictionary<int, int?>>();
-            foreach (var criterion in criteriaList)
-            {
-                data.Add(criterion.RankingCriteria.CriteriaName, new Dictionary<int, int?>());
+            var startingYear = await _universityService.GetRankingStartingYear();
 
-                foreach (var ranking in criterion.FilteredUniversityRankingYears)
-                {
-                    if (ranking.Year is not null && ranking.Score is not null)
-                    {
-                        data[criterion.RankingCriteria.CriteriaName].Add((int)ranking.Year, (int)ranking.Score);
-                    }
-                }
+            IEnumerable<CriteriaRecord> data;
+            if (systemId != null)
+            {
+                data = await _universityService.GetRankingCriteriaData((int)systemId, (int)universityId);
             }
-
+            else
+            {
+                data = new List<CriteriaRecord>();
+            }
 
             return View(new CriteriaModel
             {
                 CriteriaUniversity = new CriteriaUniversityModel
                 {
+                    UniversityId = university.Id,
                     UniversityName = university.UniversityName,
                     Country = university.Country.CountryName
                 },
-                CriteriaRecords = criteriaList.Select(element => new CriteriaRecord
+                CriteriaRecords = data,
+                RankingSystems = rankingSystems.Select(x => new CriteriaRankingSystem
                 {
-                    Name = element.RankingCriteria.CriteriaName,
-                    Data = data.GetValueOrDefault(element.RankingCriteria.CriteriaName, new Dictionary<int, int?>())
+                    Id = x.Id,
+                    Name = x.SystemName
                 }),
-                StartYear = oldestCriterion.Year,
+                StartYear = startingYear,
             });
         }
 
@@ -236,6 +208,58 @@ namespace WebApp.Controllers
         private bool UniversityExists(int id)
         {
             return _context.Universities.Any(e => e.Id == id);
+        }
+
+        public IActionResult AddRanking(int universityId)
+        {
+            var dbRankingSystems = _context.RankingSystems.ToList();
+            var dbCriteria = _context.RankingCriteria.ToList();
+            var years = Enumerable.Range(2017, DateTime.Now.Year - 2016).ToList();
+
+            var rankingSystemsOptions = new SelectList(dbRankingSystems, "Id", "SystemName");
+            var criteriaOptions = new SelectList(dbCriteria, "Id", "CriteriaName");
+            var yearsOptions =
+                new SelectList(years.Select(x => new { Value = x, Text = x }), "Value", "Text").Reverse();
+
+            var model = new AddRankingModel
+            {
+                UniversityId = universityId,
+                RankingSystemsOptions = rankingSystemsOptions,
+                CriteriaOptions = criteriaOptions,
+                YearsOptions = yearsOptions,
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRanking(AddRankingModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var ranking = new UniversityRankingYearEntity
+                {
+                    UniversityId = model.UniversityId,
+                    RankingCriteriaId = model.RankingCriteriaId,
+                    Year = model.Year,
+                    Score = model.Score
+                };
+
+                _context.UniversityRankingYears.Add(ranking);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { universityId = model.UniversityId });
+            }
+
+            var dbRankingSystems = _context.RankingSystems.ToList();
+            var dbCriteria = _context.RankingCriteria.ToList();
+            var years = Enumerable.Range(2017, DateTime.Now.Year - 2016).ToList();
+
+            model.RankingSystemsOptions = new SelectList(dbRankingSystems, "Id", "SystemName");
+            model.CriteriaOptions = new SelectList(dbCriteria, "Id", "CriteriaName");
+            model.YearsOptions = new SelectList(years.Select(x => new { Value = x, Text = x }), "Value", "Text").Reverse();
+
+            return View(model);
         }
     }
 }

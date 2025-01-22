@@ -1,18 +1,14 @@
-namespace WebApp.Models.University;
+using System.ComponentModel.DataAnnotations;
 
-public class UniversityIndexRankingSystem
-{
-    public int RankingSystemId { get; set; }
-    public string RankingSystemName { get; set; }
-}
+namespace WebApp.Models.University;
 
 public class UniversityIndex
 {
     public int UniversityId { get; set; }
 
+    [Display(Name = "University")]
     public string? UniversityName { get; set; }
     
+    [Display(Name = "Country")]
     public string? CountryName { get; set; }
-    
-    public virtual IEnumerable<UniversityIndexRankingSystem> RankingSystems { get; set; }
 }

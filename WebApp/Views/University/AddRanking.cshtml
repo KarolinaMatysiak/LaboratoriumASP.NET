@@ -1,0 +1,50 @@
+@model WebApp.Models.University.AddRankingModel
+
+@{
+    ViewData["Title"] = "Add Ranking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Add Ranking</h1>
+
+<form asp-action="AddRanking" method="post">
+    <input type="hidden" asp-for="UniversityId" value="@Model.UniversityId"/>
+
+    <div class="form-group">
+        <label asp-for="RankingSystemId"></label>
+        <span asp-validation-for="RankingSystemId" class="text-danger"></span>
+        <select asp-for="RankingSystemId" class="form-control" required>
+            @foreach (var system in Model.RankingSystemsOptions)
+            {
+                <option value="@system.Value">@system.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RankingCriteriaId"></label>
+        <span asp-validation-for="RankingCriteriaId" class="text-danger"></span>
+        <select asp-for="RankingCriteriaId" class="form-control" required>
+            @foreach (var criteria in Model.CriteriaOptions)
+            {
+                <option value="@criteria.Value">@criteria.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Year"></label>
+        <span asp-validation-for="Year" class="text-danger"></span>
+        <select asp-for="Year" asp-items="Model.YearsOptions" class="form-control" required>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Score"></label>
+        <span asp-validation-for="Score" class="text-danger"></span>
+        <input type="number" asp-for="Score" class="form-control" required></input>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Details" asp-route-universityId="@Model.UniversityId" class="btn btn-secondary">Cancel</a>
+</form>

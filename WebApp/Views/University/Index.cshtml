@@ -6,11 +6,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>University Rankings</h1>
+
 <table class="table">
     <thead>
     <tr>
@@ -20,7 +18,9 @@
         <th>
             @Html.DisplayNameFor(model => model.CountryName)
         </th>
-        <th></th>
+        <th>
+            Ranking Details
+        </th>
     </tr>
     </thead>
     <tbody>
@@ -34,11 +34,7 @@
                 @Html.DisplayFor(modelItem => item.CountryName)
             </td>
             <td>
-                @foreach (var rankingSystem in item.RankingSystems)
-                {
-                    <a asp-action="Details" asp-route-systemId="@rankingSystem.RankingSystemId" asp-route-universityId="@item.UniversityId">@rankingSystem.RankingSystemName</a>
-                    <br/>
-                }
+                <a asp-action="Details" asp-route-universityId="@item.UniversityId">Details</a>
             </td>
         </tr>
     }

@@ -21,7 +21,7 @@ public partial class UniversityDbContext : DbContext
 
     public virtual DbSet<RankingSystemEntity> RankingSystems { get; set; }
 
-    public virtual DbSet<UniversityEntity> Universities { get; set; }
+    public virtual DbSet<UniversityEntity?> Universities { get; set; }
 
     public virtual DbSet<UniversityRankingYearEntity> UniversityRankingYears { get; set; }
 

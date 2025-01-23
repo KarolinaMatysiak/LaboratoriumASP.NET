@@ -18,15 +18,16 @@ namespace WebApp.Controllers
             _context = context;
             _universityService = universityService;
         }
-        
+
         [AllowAnonymous]
+        [HttpGet]
         public async Task<IActionResult> Index([FromQuery] PaginationModel pagination)
         {
             var recordsCount = await _context
                 .Universities
                 .AsNoTracking()
                 .CountAsync();
-            
+
             var data = await _context
                 .Universities
                 .Include(c => c.Country)
@@ -35,10 +36,10 @@ namespace WebApp.Controllers
                 .Take(pagination.PageSize)
                 .AsNoTracking()
                 .ToListAsync();
-            
+
             var totalPages = recordsCount / pagination.PageSize;
-            var pageSizeOptions = new SelectList(new List<int>{ 5, 20, 50}, pagination.PageSize);
-            
+            var pageSizeOptions = new SelectList(new List<int> { 5, 20, 50 }, pagination.PageSize);
+
             var model = new UniversityIndexModel
             {
                 UniversitiesList = data.Select((universityEntity) => new UniversityListItemModel
@@ -104,21 +105,34 @@ namespace WebApp.Controllers
             });
         }
 
-        [Authorize(Roles = "admin")]
-        public IActionResult AddRanking(int universityId)
+      
+        [HttpGet]
+        public async Task<ViewResult> AddRanking(int universityId, int? rankingSystemId)
         {
             var dbRankingSystems = _context.RankingSystems.ToList();
-            var dbCriteria = _context.RankingCriteria.ToList();
+
             var years = Enumerable.Range(2017, DateTime.Now.Year - 2016).ToList();
 
-            var rankingSystemsOptions = new SelectList(dbRankingSystems, "Id", "SystemName");
-            var criteriaOptions = new SelectList(dbCriteria, "Id", "CriteriaName");
+            var criteria = await _context.RankingCriteria.Where(x => x.RankingSystemId == rankingSystemId)
+                .ToListAsync();
+
+            var rankingSystemsOptions = dbRankingSystems
+                .Select(rs => new SelectListItem
+                {
+                    Value = rs.Id.ToString(),
+                    Text = rs.SystemName
+                })
+                .ToList();
+            rankingSystemsOptions.Insert(0, new SelectListItem { Value = "", Text = "-", Selected = true });
+
+            var criteriaOptions = new SelectList(criteria, "Id", "CriteriaName");
             var yearsOptions =
                 new SelectList(years.Select(x => new { Value = x, Text = x }), "Value", "Text").Reverse();
 
             var model = new AddRankingModel
             {
                 UniversityId = universityId,
+                RankingSystemId = rankingSystemId,
                 RankingSystemsOptions = rankingSystemsOptions,
                 CriteriaOptions = criteriaOptions,
                 YearsOptions = yearsOptions,
@@ -126,7 +140,7 @@ namespace WebApp.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "admin")]
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddRanking(AddRankingModel model)
@@ -148,12 +162,23 @@ namespace WebApp.Controllers
             }
 
             var dbRankingSystems = _context.RankingSystems.ToList();
-            var dbCriteria = _context.RankingCriteria.ToList();
+            var criteria = await _context.RankingCriteria.Where(x => x.RankingSystemId == model.RankingSystemId)
+                .ToListAsync();
+            var rankingSystemsOptions = dbRankingSystems
+                .Select(rs => new SelectListItem
+                {
+                    Value = rs.Id.ToString(),
+                    Text = rs.SystemName
+                })
+                .ToList();
+            rankingSystemsOptions.Insert(0, new SelectListItem { Value = "", Text = "-", Selected = true });
+            
             var years = Enumerable.Range(2017, DateTime.Now.Year - 2016).ToList();
 
-            model.RankingSystemsOptions = new SelectList(dbRankingSystems, "Id", "SystemName");
-            model.CriteriaOptions = new SelectList(dbCriteria, "Id", "CriteriaName");
-            model.YearsOptions = new SelectList(years.Select(x => new { Value = x, Text = x }), "Value", "Text").Reverse();
+            model.RankingSystemsOptions = rankingSystemsOptions;
+            model.CriteriaOptions = new SelectList(criteria, "Id", "CriteriaName");
+            model.YearsOptions =
+                new SelectList(years.Select(x => new { Value = x, Text = x }), "Value", "Text").Reverse();
 
             return View(model);
         }

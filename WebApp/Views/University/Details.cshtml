@@ -52,7 +52,7 @@
             <th>
                 Criterion
             </th>
-            @for (var i = 0; i < DateTime.Now.Year - Model.StartYear; i++)
+            @for (var i = 0; i < DateTime.Now.Year - Model.StartYear + 1; i++)
             {
                 <th>
                     @(Model.StartYear + i)
@@ -68,7 +68,7 @@
                 <td>
                     @item.Name
                 </td>
-                @for (int i = 0; i < DateTime.Now.Year - Model.StartYear; i++)
+                @for (int i = 0; i < DateTime.Now.Year - Model.StartYear + 1; i++)
                 {
                     <td>
                         @{
@@ -86,8 +86,9 @@
 
 <div>
     @* <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> | *@
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-primary" >Back to List</a>
 </div>
+<br/>
 
 <a asp-action="AddRanking" asp-route-universityId="@Model.CriteriaUniversity.UniversityId" class="btn btn-primary">
     Add Ranking

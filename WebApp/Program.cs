@@ -20,7 +20,7 @@ public class Program
         builder.Services.AddDbContext<AppDbContex>();
         builder.Services.AddDbContext<UniversityDbContext>(op =>
         {
-            op.UseSqlite((builder.Configuration["UniversityDatabse:ConnectionString"]));
+            op.UseSqlite((builder.Configuration["UniversityDatabase:ConnectionString"]));
         });
 
         builder.Services.AddDefaultIdentity<IdentityUser>(options =>

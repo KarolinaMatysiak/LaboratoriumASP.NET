@@ -17,30 +17,31 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
-        builder.Services.AddDbContext<AppDbContex>();
+        builder.Services.AddDbContext<AppDbContex>(op =>
+        {
+            op.UseSqlite((builder.Configuration["UsersDatabase:ConnectionString"]));
+        });
         builder.Services.AddDbContext<UniversityDbContext>(op =>
         {
             op.UseSqlite((builder.Configuration["UniversityDatabase:ConnectionString"]));
         });
 
         builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-        {
-            options.SignIn.RequireConfirmedAccount = true;
-            options.Password.RequiredLength = 5;
-            options.Password.RequireDigit = false;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireUppercase = false;
-
-        })
-            
-        .AddRoles<IdentityRole>()
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequiredLength = 5;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            })
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContex>();
 
         builder.Services.AddTransient<IUniversityService, UniversityService>();
         builder.Services.AddTransient<IKomputerService, EFKomputerService>();
         builder.Services.AddMemoryCache();
         builder.Services.AddSession();
-            
+
         builder.Services.AddSingleton<IDateTimeProvider, CurrentDateTimeProvider>();
 
         var app = builder.Build();

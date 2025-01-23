@@ -23,13 +23,18 @@ public class AppDbContex : IdentityDbContext<IdentityUser>
         //join laczy sciezki, combain kombinuje (np. jak ktoras sciezka jest absolutna to nic nie robi, uzywamy gdy nie wiemy jaka jest struktura a chcemy zrobic jedna sciezke)
         //control i litera "o" - nadpisywanie metod
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    
+    public AppDbContex(DbContextOptions<AppDbContex> options)
+        : base(options)
     {
-        //wlasne polaczenie z baza, connection string to uniwersalny string
-        optionsBuilder.UseSqlite(connectionString: $"Data source={DbPath}");
-        
     }
+
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     //wlasne polaczenie z baza, connection string to uniwersalny string
+    //     optionsBuilder.UseSqlite(connectionString: $"Data source={DbPath}");
+    //     
+    // }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
                           {

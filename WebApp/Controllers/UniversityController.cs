@@ -59,6 +59,7 @@ namespace WebApp.Controllers
             return View(model);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Details(int? universityId, int? systemId)
         {

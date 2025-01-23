@@ -9,13 +9,16 @@ public class AddRankingModel
 {
     [HiddenInput]
     [Required]
+    [MinLength(length:1, ErrorMessage ="Ranking University Id cannot be empty")]
     public int UniversityId { get; set; }
     
     [Display(Name = "System")]
     [Required]
+    [MinLength(length:1, ErrorMessage ="Ranking System Id cannot be empty")]
     public int RankingSystemId { get; set; }
     
     [Display(Name = "Criteria")]
+    [MinLength(length:1, ErrorMessage ="Ranking Criteria Id cannot be empty")]
     [Required]
     public int RankingCriteriaId { get; set; }
     

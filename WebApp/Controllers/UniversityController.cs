@@ -20,26 +20,42 @@ namespace WebApp.Controllers
             _context = context;
             _universityService = universityService;
         }
-
-        // GET: University
-        //stronicowanie
-        public async Task<IActionResult> Index(int page = 1, int size = 20)
+        
+        public async Task<IActionResult> Index([FromQuery] PaginationModel pagination)
         {
+            var recordsCount = await _context
+                .Universities
+                .AsNoTracking()
+                .CountAsync();
+            
             var data = await _context
                 .Universities
                 .Include(c => c.Country)
                 .OrderByDescending((m => m.Country))
-                .Skip(size * (page - 1))
-                .Take(size)
+                .Skip(pagination.PageSize * (pagination.CurrentPage - 1))
+                .Take(pagination.PageSize)
                 .AsNoTracking()
                 .ToListAsync();
-
-            var model = data.Select((universityEntity) => new UniversityIndex
+            
+            var totalPages = recordsCount / pagination.PageSize;
+            var pageSizeOptions = new SelectList(new List<int>{ 5, 20, 50}, pagination.PageSize);
+            
+            var model = new UniversityIndexModel
             {
-                UniversityId = universityEntity.Id,
-                UniversityName = universityEntity.UniversityName,
-                CountryName = universityEntity.Country?.CountryName,
-            });
+                UniversitiesList = data.Select((universityEntity) => new UniversityListItemModel
+                {
+                    UniversityId = universityEntity.Id,
+                    UniversityName = universityEntity.UniversityName,
+                    CountryName = universityEntity.Country?.CountryName,
+                }),
+                Pagination = new PaginationModel
+                {
+                    CurrentPage = pagination.CurrentPage,
+                    TotalPages = totalPages,
+                    PageSizeOptions = pageSizeOptions,
+                    PageSize = pagination.PageSize
+                }
+            };
             return View(model);
         }
 

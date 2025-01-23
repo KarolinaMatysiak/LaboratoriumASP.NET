@@ -1,5 +1,6 @@
-@model IEnumerable<WebApp.Models.University.UniversityIndex>
-
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using WebApp.Models.University
+@model WebApp.Models.University.UniversityIndexModel
 
 @{
     ViewData["Title"] = "Index";
@@ -13,10 +14,10 @@
     <thead>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.UniversityName)
+            @Html.DisplayNameFor(model => model.UniversitiesList.First().UniversityName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.CountryName)
+            @Html.DisplayNameFor(model => model.UniversitiesList.First().CountryName)
         </th>
         <th>
             Ranking Details
@@ -24,7 +25,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model)
+    @foreach (var item in Model.UniversitiesList)
     {
         <tr>
             <td>
@@ -40,3 +41,84 @@
     }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-between align-items-center">
+    <div class="pagination-size">
+        <label asp-for="Pagination.PageSize"></label>
+        <form method="get" class="form-inline">
+            <select asp-for="Pagination.PageSize" onchange="this.form.submit()" asp-items="@Model.Pagination.PageSizeOptions" class="form-control form-control-sm">
+            </select>
+        </form>
+    </div>
+
+    <div class="my-4">
+        @* First And Previous Buttons *@
+        @if (Model.Pagination.CurrentPage > 1)
+        {
+            <a href="@Url.Action("Index", new PaginationModel { CurrentPage = 1, PageSize = Model.Pagination.PageSize })" class="btn btn-primary">First</a>
+            <a href="@Url.Action("Index", new PaginationModel { CurrentPage = Model.Pagination.CurrentPage - 1, PageSize = Model.Pagination.PageSize })" class="btn btn-primary">Previous</a>
+        }
+
+        @* Page Numbers *@
+        @* Variables for pagination logic *@
+        @{
+            var pageCount = Model.Pagination.TotalPages;
+            var currentPage = Model.Pagination.CurrentPage;
+            var range = 3; // Number of pages before and after the current page to show
+
+            var startPage = Math.Max(1, currentPage - range);
+            var endPage = Math.Min(pageCount, currentPage + range);
+        }
+
+        @* Show first pages if not already included *@
+        @if (startPage > 1)
+        {
+            for (var i = 1; i <= Math.Min(3, startPage - 1); i++) // Ensure at least 3 first pages are shown
+            {
+                <a href="@Url.Action("Index", new PaginationModel { CurrentPage = i, PageSize = Model.Pagination.PageSize })" class="btn btn-primary">@i</a>
+            }
+
+            @* Add ... only if there is a gap between the first pages and the current range *@
+            @if (startPage > 4)
+            {
+                <span class="btn btn-secondary">...</span>
+            }
+        }
+
+        @* Show current range of pages *@
+        @for (var i = startPage; i <= endPage; i++)
+        {
+            if (i == currentPage)
+            {
+                <span class="btn btn-secondary active">@i</span>
+            }
+            else
+            {
+                <a href="@Url.Action("Index", new PaginationModel { CurrentPage = i, PageSize = Model.Pagination.PageSize })" class="btn btn-primary">@i</a>
+            }
+        }
+
+        @* Show last pages if not already included *@
+        @if (endPage < pageCount)
+        {
+            @* Add ... only if there is a gap between the current range and the last pages *@
+            @if (endPage < pageCount - 3)
+            {
+                <span class="btn btn-secondary">...</span>
+            }
+
+            for (var i = Math.Max(pageCount - 2, endPage + 1); i <= pageCount; i++) // Ensure at least 3 last pages are shown
+            {
+                <a href="@Url.Action("Index", new PaginationModel { CurrentPage = i, PageSize = Model.Pagination.PageSize })" class="btn btn-primary">@i</a>
+            }
+        }
+
+        @* Next And Last Buttons *@
+        @if (Model.Pagination.CurrentPage < Model.Pagination.TotalPages)
+        {
+            <a href="@Url.Action("Index", new PaginationModel { CurrentPage = Model.Pagination.CurrentPage + 1, PageSize = Model.Pagination.PageSize })" class="btn btn-primary">Next</a>
+            <a href="@Url.Action("Index", new PaginationModel { CurrentPage = Model.Pagination.TotalPages, PageSize = Model.Pagination.PageSize })" class="btn btn-primary">Last</a>
+        }
+    </div>
+
+</div>
